@@ -48,9 +48,11 @@ func find_target():
 					shortest_distance = distance
 					target = node
 
-func attack_maybe() -> float:
+func attack_maybe(target: Player) -> float:
 	if(time_since_last_hit > delay_for_hit):
 		time_since_last_hit = 0
+		var direction: Vector2 = global_position.direction_to(target.global_position)
+		attack_event.emit(id, direction)
 		return att
 	
 	return 0

@@ -49,6 +49,7 @@ func create_player(id: int):
 	player.position = initial_position
 	add_child(player)
 	player.position_changed_event.connect(connection_handler.object_position_update)
+	player.attack_event.connect(_attack)
 	
 func broadcast_game_objects(game_objects: Dictionary):
 	for key in game_objects:
@@ -61,6 +62,7 @@ func _add_enemy(new_enemy: Enemy, global_position: Vector2):
 	new_enemy.position_changed_event.connect(connection_handler.object_position_update)
 	new_enemy.die_event.connect(_enemy_died)
 	new_enemy.take_damage_event.connect(_take_damage)
+	new_enemy.attack_event.connect(_attack)
 	new_enemy.global_position = global_position
 	connection_handler.object_created(new_enemy.id, new_enemy.type, new_enemy.position)
 
@@ -72,3 +74,6 @@ func _enemy_died(object: CharacterBase):
 
 func _take_damage(object: CharacterBase):
 	connection_handler.object_takes_damage(object.id, object.hp, object.max_hp)
+
+func _attack(id: int, direction: Vector2):
+	connection_handler.object_attacks(id, direction)

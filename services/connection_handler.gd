@@ -46,6 +46,10 @@ func object_takes_damage(id: int, damage: float, newHp: float):
 	for connection in active_connections:
 		rpc_id(connection, "receive_object_takes_damage", id, damage, newHp)
 
+func object_attacks(id: int, direction: Vector2):
+	for connection in active_connections:
+		rpc_id(connection, "receive_object_attacks", id, direction)
+
 func send_game_state(peer_id: int):
 	rpc_id(peer_id, "receive_game_state", active_connections.size(), ConnectionConstants.MAX_CONNECTIONS)
 

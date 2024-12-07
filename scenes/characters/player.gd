@@ -33,13 +33,13 @@ func check_attacking_enemies() -> void:
 	for body in attackingEnemies:
 		if body != null && body is Enemy:
 			var enemy: Enemy = body as Enemy;
-			var attackPoints: float = enemy.attack_maybe()
+			var attackPoints: float = enemy.attack_maybe(self)
 			hp -= attackPoints
 
 func check_enemies_in_attacking_range() -> void:
 	if time_since_last_hit > delay_for_hit && enemiesInAttackRange.size() > 0:
 		time_since_last_hit = 0
-		
+		attack_event.emit(id, Vector2.ZERO)
 		for body in enemiesInAttackRange:
 			if body != null && body is Enemy:
 				var enemy: Enemy = body as Enemy;
