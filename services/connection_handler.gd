@@ -1,6 +1,4 @@
-extends RpcBase
-
-class_name ConnectionHandler
+class_name ConnectionHandler extends RpcBase
 
 signal player_connect_event(peer_id: int)
 signal player_disconnect_event(peer_id: int)

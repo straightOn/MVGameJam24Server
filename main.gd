@@ -1,13 +1,20 @@
 extends Node2D
 
 @onready var connection_handler: ConnectionHandler = %ConnectionHandler
-@onready var player_resorce: Resource = preload("res://shared/player.tscn")
+@onready var player_resorce: Resource = preload("res://scenes/characters/player.tscn")
+
+@onready var spawnpoint: SpawnPoint = %SpawnPoint
+
 
 const ObjectTypeResource = preload("res://shared/object_type.gd")
 
 var connected_players: Dictionary = {}
+var enemies: Dictionary = {}
 
 func _ready():
+	# init events
+	spawnpoint.add_enemy_event.connect(_add_enemy)
+	
 	connection_handler.player_connect_event.connect(_player_connect)
 	connection_handler.player_disconnect_event.connect(_player_disconnect)
 	connection_handler.player_move_event.connect(_player_move_event)
@@ -38,5 +45,16 @@ func _player_join_game(peer_id: int):
 		add_child(connected_player)
 		connected_player.position_changed_event.connect(connection_handler.object_position_update)
 		for key in connected_players:
-			var current_player = connected_players[key]
+			var current_player: Player = connected_players[key] as Player
 			connection_handler.object_created(key, ObjectTypeResource.ObjectType.Player, current_player.position)
+		for key in enemies:
+			var current_enemy: Enemy = enemies[key] as Enemy
+			connection_handler.object_created(key, current_enemy.enemy_type, current_enemy.position)
+	spawnpoint.enabled = connected_players.size() > 0
+
+func _add_enemy(new_enemy: Enemy, global_position: Vector2):
+	enemies[new_enemy.id] = new_enemy
+	add_child(new_enemy)
+	new_enemy.position_changed_event.connect(connection_handler.object_position_update)
+	new_enemy.global_position = global_position
+	connection_handler.object_created(new_enemy.id, new_enemy.enemy_type, new_enemy.position)

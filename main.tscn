@@ -1,7 +1,8 @@
-[gd_scene load_steps=3 format=3 uid="uid://cndm3ggwfaupf"]
+[gd_scene load_steps=4 format=3 uid="uid://cndm3ggwfaupf"]
 
 [ext_resource type="Script" path="res://main.gd" id="1_cjxr1"]
 [ext_resource type="Script" path="res://services/connection_handler.gd" id="2_7ufa8"]
+[ext_resource type="Script" path="res://scenes/environments/spawnpoint.gd" id="3_mpv1r"]
 
 [node name="Main" type="Node2D"]
 script = ExtResource("1_cjxr1")
@@ -9,3 +10,8 @@ script = ExtResource("1_cjxr1")
 [node name="ConnectionHandler" type="Node" parent="."]
 unique_name_in_owner = true
 script = ExtResource("2_7ufa8")
+
+[node name="SpawnPoint" type="Node2D" parent="."]
+unique_name_in_owner = true
+position = Vector2(246, 275)
+script = ExtResource("3_mpv1r")
