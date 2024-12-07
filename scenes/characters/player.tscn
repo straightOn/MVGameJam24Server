@@ -8,7 +8,7 @@ radius = 20.0
 [sub_resource type="CircleShape2D" id="CircleShape2D_tswmu"]
 radius = 62.1289
 
-[node name="Player" type="CharacterBody2D"]
+[node name="Player" type="CharacterBody2D" groups=["Player"]]
 motion_mode = 1
 script = ExtResource("1_bp4xm")
 

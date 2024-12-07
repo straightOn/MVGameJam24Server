@@ -1,7 +1,5 @@
 class_name Player extends CharacterBase
 
-const GamePhaseResource = preload("res://shared/game_phase.gd")
-
 const HP_REGENERATION: float = 0.1
 
 var xp: int = 0
@@ -22,13 +20,13 @@ var enemiesInAttackRange: Array = []
 var time_since_last_hit: float = 10
 var delay_for_hit: float = 1
 
-var current_phase: GamePhaseResource.Phase = GamePhaseResource.Phase.DAY
-
 var time_to_switch_phase: int = 60
 var switch_phase_timer = 60
 
 func _ready():
 	speed = 150
+	type = ObjectTypeResource.ObjectType.Player
+	phase = GamePhaseResource.Phase.DAY
 
 
 func _on_enemy_area_body_entered(body: Node2D) -> void:
@@ -111,15 +109,11 @@ func get_max_hp():
 	return maxhp_base + ((get_level() - 1) * maxhp_increase_per_level)
 
 func switch_phase():
-	match current_phase:
+	match phase:
 		GamePhaseResource.Phase.NIGHT:
-			current_phase = GamePhaseResource.Phase.DAY
+			phase = GamePhaseResource.Phase.DAY
 		GamePhaseResource.Phase.DAY:
-			current_phase = GamePhaseResource.Phase.NIGHT
-
-func get_phase() -> GamePhaseResource.Phase:
-	return current_phase
-
+			phase = GamePhaseResource.Phase.NIGHT
 
 func _on_enemy_area_body_exited(body: Node2D) -> void:
 	attackingEnemies.erase(body)

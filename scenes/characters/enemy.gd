@@ -1,8 +1,5 @@
 class_name Enemy extends CharacterBase
 
-const GamePhaseResource = preload("res://shared/game_phase.gd")
-const ObjectTypeResource = preload("res://shared/object_type.gd")
-
 var time_since_last_hit: float = 10
 var delay_for_hit: float = 1
 
@@ -13,12 +10,12 @@ var delay_for_hit: float = 1
 @export var att: float = 1
 @export var att_base: float = 1
 
-@export var enemy_type: ObjectTypeResource.ObjectType = ObjectTypeResource.ObjectType.Bug
-@export var enemy_phase: GamePhaseResource.Phase = GamePhaseResource.Phase.DAY
-
 var target: Player
 
 func _ready() -> void:
+	type = ObjectTypeResource.ObjectType.Bug
+	phase = GamePhaseResource.Phase.DAY
+	speed = 200
 	id = Time.get_ticks_usec()
 	hp = hp_base * pow(1.1, Gamemanager.get_wave() - 1)
 	xp = Gamemanager.get_wave()
@@ -37,20 +34,17 @@ func _process(delta: float) -> void:
 		#queue_free()
 
 func find_target():
-	var players = get_tree().get_nodes_in_group("Players");
+	var players = get_tree().get_nodes_in_group("Player");
 	var shortest_distance = INF
 	
 	for node in players:
 		if node is Player:
-			if node.get_phase() == enemy_phase:
+			if node.get_phase() == get_phase():
 				var distance = global_position.distance_to(node.global_position)
 				
 				if distance < shortest_distance:
 					shortest_distance = distance
 					target = node
-
-func get_enemy_type():
-	return enemy_type
 
 func attack_maybe() -> float:
 	if(time_since_last_hit > delay_for_hit):
@@ -72,7 +66,7 @@ func kill_maybe() -> void:
 		queue_free()
 
 func _on_area_2d_body_entered(body: Node2D) -> void:
-	if(body.is_in_group("Players")):
+	if(body.is_in_group("Player")):
 		if(time_since_last_hit > delay_for_hit):
 			# TODO: Hit player
 			
@@ -80,6 +74,3 @@ func _on_area_2d_body_entered(body: Node2D) -> void:
 
 func get_xp():
 	return xp
-
-func get_phase():
-	return enemy_phase
