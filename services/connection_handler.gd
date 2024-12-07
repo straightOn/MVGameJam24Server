@@ -5,7 +5,7 @@ signal player_disconnect_event(peer_id: int)
 signal player_move_x_event(peer_id: int, input: float)
 signal player_move_y_event(peer_id: int, input: float)
 signal player_move_event(peer_id: int, input: Vector2)
-signal player_join_game_event(peer_id: int)
+signal player_join_game_event(peer_id: int, name: String)
 
 var active_connections: Array[int] = []
 
@@ -27,10 +27,10 @@ func _on_peer_disconnected(peer_id):
 	active_connections.erase(peer_id)
 	player_disconnect_event.emit(peer_id)
 	
-func object_created(id: int, type: ObjectTypeResource.ObjectType, initial_position: Vector2):
+func object_created(id: int, type: ObjectTypeResource.ObjectType, initial_position: Vector2, label: String):
 	print_debug("Object created.")
 	for connection in active_connections:
-		rpc_id(connection, "receive_object_created", id, type, initial_position)
+		rpc_id(connection, "receive_object_created", id, type, initial_position, label)
 
 func object_removed(id: int):
 	print_debug("Object removed.")
@@ -71,10 +71,10 @@ func game_over(id: int, kills: int, alive_time: int):
 	rpc_id(id, "receive_game_over", id, kills, alive_time)
 
 @rpc("any_peer")
-func join_game():
-	super.join_game()
+func join_game(name: String):
+	super.join_game(name)
 	var sender_id = multiplayer.get_remote_sender_id()
-	self.player_join_game_event.emit(sender_id)
+	self.player_join_game_event.emit(sender_id, name)
 
 @rpc("any_peer")
 func move_action(direction: Vector2):

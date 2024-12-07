@@ -37,17 +37,18 @@ func _player_move_event(peer_id: int, input: Vector2):
 	if (Gamemanager.connected_players.has(peer_id)):
 		(Gamemanager.connected_players.get(peer_id) as Player).move_action(input)
 
-func _player_join_game(peer_id: int):
+func _player_join_game(peer_id: int, name: String):
 	if (!Gamemanager.connected_players.has(peer_id)):
-		create_player(peer_id)
+		create_player(peer_id, name)
 		broadcast_game_objects(Gamemanager.connected_players)
 		broadcast_game_objects(Gamemanager.enemies)
 
-func create_player(id: int):
+func create_player(id: int, player_name: String):
 	var initial_position: Vector2 = Vector2(50,50)
 	var player: Player = player_resorce.instantiate() as Player
 	Gamemanager.connected_players[id] = player
 	player.id = id
+	player.label = player_name
 	player.position = initial_position
 	add_child(player)
 	player.position_changed_event.connect(connection_handler.object_position_update)
@@ -60,7 +61,7 @@ func create_player(id: int):
 func broadcast_game_objects(game_objects: Dictionary):
 	for key in game_objects:
 		var current_game_object: GameObject = game_objects[key] as GameObject
-		connection_handler.object_created(key, current_game_object.type, current_game_object.position)
+		connection_handler.object_created(key, current_game_object.type, current_game_object.position, current_game_object.label)
 
 func _add_enemy(new_enemy: Enemy, global_position: Vector2):
 	Gamemanager.enemies[new_enemy.id] = new_enemy
@@ -70,7 +71,7 @@ func _add_enemy(new_enemy: Enemy, global_position: Vector2):
 	new_enemy.take_damage_event.connect(connection_handler.object_takes_damage)
 	new_enemy.attack_event.connect(connection_handler.object_attacks)
 	new_enemy.global_position = global_position
-	connection_handler.object_created(new_enemy.id, new_enemy.type, new_enemy.position)
+	connection_handler.object_created(new_enemy.id, new_enemy.type, new_enemy.position, "none")
 
 func _enemy_died(object: CharacterBase):
 	remove_child(Gamemanager.enemies.get(object.id))
