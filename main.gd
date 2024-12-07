@@ -50,6 +50,7 @@ func create_player(id: int):
 	add_child(player)
 	player.position_changed_event.connect(connection_handler.object_position_update)
 	player.attack_event.connect(_attack)
+	player.take_damage_event.connect(_take_damage)
 	
 func broadcast_game_objects(game_objects: Dictionary):
 	for key in game_objects:

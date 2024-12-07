@@ -35,6 +35,7 @@ func check_attacking_enemies() -> void:
 			var enemy: Enemy = body as Enemy;
 			var attackPoints: float = enemy.attack_maybe(self)
 			hp -= attackPoints
+			take_damage_event.emit(id, attackPoints, hp)
 
 func check_enemies_in_attacking_range() -> void:
 	if time_since_last_hit > delay_for_hit && enemiesInAttackRange.size() > 0:

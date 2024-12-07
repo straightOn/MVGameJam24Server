@@ -8,7 +8,7 @@ var max_hp: float
 
 var last_sent_position: Vector2 = Vector2.ZERO
 signal position_changed_event(id: int, position: Vector2, direction: Vector2)
-signal take_damage_event(object: CharacterBase)
+signal take_damage_event(id: int, damage: float, newHp: float)
 signal attack_event(id: int, direction: Vector2)
 signal die_event(object: CharacterBase)
 

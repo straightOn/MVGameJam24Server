@@ -70,7 +70,7 @@ func take_damage(damage: float, attack_position: Vector2) -> float:
 	var knockback_direction = (global_position - attack_position).normalized()
 	knockback = knockback_direction * knockback_strength
 	
-	take_damage_event.emit(self)
+	take_damage_event.emit(id, damage, hp)
 	return hp
 	
 func kill_maybe() -> void:	

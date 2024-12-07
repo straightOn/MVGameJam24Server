@@ -1,9 +1,7 @@
 extends Node
 
 static var _current_wave: int = 0
-static var _current_player_count: int = 0
 static var _current_status: String = "Idle" # Possible statuses: "Idle", "Ingame", "Dead"
-static var _enemy_dict: Dictionary
 
 static var _time_base: float = 5;
 static var _current_time: float = _time_base;
@@ -34,22 +32,12 @@ static func get_remaining_time(delta: float) -> int:
 static func get_wave() -> int:
 	return _current_wave
 
-static func get_player_count() -> int:
-	return _current_player_count
-
 static func get_status() -> String:
 	return _current_status
 
 # Public setter methods
 static func set_wave(wave: int) -> void:
 	_current_wave = wave
-
-static func add_player() -> void:
-	_current_player_count += 1
-
-static func remove_player() -> void:
-	if _current_player_count > 0:
-		_current_player_count -= 1
 
 static func set_status_ingame() -> void:
 	_current_status = "Ingame"
@@ -63,9 +51,7 @@ static func get_max_enemies() -> int:
 # Optional: Reset method to reset game data
 static func reset_game() -> void:
 	_current_wave = 1
-	_current_player_count = 1
 	_current_status = "Idle"
-	_enemy_dict.clear()
 	_current_time = _time_base
 
 static func can_add_enemy() -> bool:
