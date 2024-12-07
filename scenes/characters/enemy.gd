@@ -29,6 +29,8 @@ func _init() -> void:
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta: float) -> void:
+	if (!Gamemanager.is_game_active()):
+		return
 	time_since_last_hit += delta
 	if knockback.length() > 1:
 		velocity = knockback

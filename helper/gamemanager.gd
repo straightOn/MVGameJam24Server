@@ -11,17 +11,29 @@ static var _max_waves: int = 20
 static var connected_players: Dictionary = {}
 static var enemies: Dictionary = {}
 
+signal wave_timer_updated_event(remaining: int)
+signal new_wave_started_event(new_wave: int)
+
+var last_time: int
+
 func _ready() -> void:
 	reset_game()
 
-static func next_wave() -> void:
+func _process(delta):	
+	if (!Gamemanager.is_game_active()):
+		return
+	# time is für wave - man kommt automatisch in die nächste stufe
+	var new_time: int = get_remaining_time(delta)
+	if (new_time != last_time):
+		last_time = new_time
+		wave_timer_updated_event.emit(new_time)
+
+func next_wave() -> void:
 	_current_wave += 1
 	_current_time = _time_base + (5 * (_current_wave - 1))
+	new_wave_started_event.emit(_current_wave)
 	
-static func game_won() -> bool:
-	return _current_wave > _max_waves
-	
-static func get_remaining_time(delta: float) -> int:
+func get_remaining_time(delta: float) -> int:
 	_current_time -= delta
 	
 	if(_current_time < 0):
@@ -29,6 +41,10 @@ static func get_remaining_time(delta: float) -> int:
 		
 	return int(_current_time)
 
+	
+static func game_won() -> bool:
+	return _current_wave > _max_waves
+	
 static func get_wave() -> int:
 	return _current_wave
 

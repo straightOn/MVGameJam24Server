@@ -9,10 +9,13 @@ extends Node2D
 const ObjectTypeResource = preload("res://shared/object_type.gd")
 
 func _ready():
-	# init events
+	# spawn-events
 	spawnpoint.add_enemy_event.connect(_add_enemy)
 	spawnpoint2.add_enemy_event.connect(_add_enemy)
-	
+	# wave-events
+	Gamemanager.wave_timer_updated_event.connect(_wave_timer_updated)
+	Gamemanager.new_wave_started_event.connect(_new_wave_started)
+	# connection events
 	connection_handler.player_connect_event.connect(_player_connect)
 	connection_handler.player_disconnect_event.connect(_player_disconnect)
 	connection_handler.player_move_event.connect(_player_move_event)
@@ -78,3 +81,9 @@ func _take_damage(id: int, damage: float, newHp: float):
 
 func _attack(id: int, direction: Vector2):
 	connection_handler.object_attacks(id, direction)
+	
+func _wave_timer_updated(remaining: int):
+	connection_handler.update_wave_timer(remaining)
+	
+func _new_wave_started(new_wave: int):
+	connection_handler.new_wave_started(new_wave)

@@ -50,6 +50,14 @@ func object_attacks(id: int, direction: Vector2):
 	for connection in active_connections:
 		rpc_id(connection, "receive_object_attacks", id, direction)
 
+func update_wave_timer(remaining: int):
+	for connection in active_connections:
+		rpc_id(connection, "receive_remaining_time", remaining)
+	
+func new_wave_started(new_wave: int):
+	for connection in active_connections:
+		rpc_id(connection, "receive_next_wave", new_wave)
+
 func send_game_state(peer_id: int):
 	rpc_id(peer_id, "receive_game_state", active_connections.size(), ConnectionConstants.MAX_CONNECTIONS)
 
