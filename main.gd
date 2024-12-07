@@ -73,8 +73,8 @@ func _enemy_died(object: CharacterBase):
 	connection_handler.object_removed(object.id)
 	object.queue_free()
 
-func _take_damage(object: CharacterBase):
-	connection_handler.object_takes_damage(object.id, object.hp, object.max_hp)
+func _take_damage(id: int, damage: float, newHp: float):
+	connection_handler.object_takes_damage(id, damage, newHp)
 
 func _attack(id: int, direction: Vector2):
 	connection_handler.object_attacks(id, direction)
