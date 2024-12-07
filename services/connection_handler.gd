@@ -41,6 +41,10 @@ func object_position_update(id: int, position: Vector2, direction: Vector2):
 	print_debug("Updating Object position.")
 	for connection in active_connections:
 		rpc_id(connection, "receive_object_position_update", id, position, direction)
+		
+func object_takes_damage(id: int, damage: float, newHp: float):
+	for connection in active_connections:
+		rpc_id(connection, "receive_object_takes_damage", id, damage, newHp)
 
 func send_game_state(peer_id: int):
 	rpc_id(peer_id, "receive_game_state", active_connections.size(), ConnectionConstants.MAX_CONNECTIONS)

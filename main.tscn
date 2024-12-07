@@ -13,5 +13,10 @@ script = ExtResource("2_7ufa8")
 
 [node name="SpawnPoint" type="Node2D" parent="."]
 unique_name_in_owner = true
-position = Vector2(246, 275)
+position = Vector2(178, 347)
+script = ExtResource("3_mpv1r")
+
+[node name="SpawnPoint2" type="Node2D" parent="."]
+unique_name_in_owner = true
+position = Vector2(851, 140)
 script = ExtResource("3_mpv1r")

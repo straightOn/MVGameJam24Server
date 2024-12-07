@@ -10,17 +10,16 @@ signal add_enemy_event(new_enemy: Enemy, global_position: Vector2)
 
 var time_elapsed: float = 0.0
 const MAX_TIME_ELAPSED: float = 0.3
-var enabled: bool = false
 
 func _process(delta: float) -> void:
-	if (!enabled):
+	if (!Gamemanager.is_game_active()):
 		return
 	if (!Gamemanager.can_add_enemy()):
 		return
 	time_elapsed += delta;
 	
 	if(time_elapsed > MAX_TIME_ELAPSED):
-		time_elapsed = 0		
+		time_elapsed = 0
 		var new_enemy: Enemy = enemy_resource.instantiate() as Enemy
 		new_enemy.type = enemy_type
 		var offset = Vector2(randi_range(-5, 5), randi_range(-5, 5))

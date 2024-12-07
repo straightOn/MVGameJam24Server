@@ -11,10 +11,9 @@ var att_increase_per_level: int = 2
 var maxhp_base: float = 10
 var maxhp_increase_per_level: int = 2
 
-var hp: float = 10
 var hp_last_regen: float = 0
 
-var attackingEnemies: Array = []
+var attackingEnemies: Array[Enemy] = []
 var enemiesInAttackRange: Array = []
 
 var time_since_last_hit: float = 10
@@ -23,53 +22,41 @@ var delay_for_hit: float = 1
 var time_to_switch_phase: int = 60
 var switch_phase_timer = 60
 
-func _ready():
+func _init():
 	speed = 150
+	max_hp = maxhp_base
+	hp = max_hp
 	type = ObjectTypeResource.ObjectType.Player
-	phase = GamePhaseResource.Phase.DAY
-
-
-func _on_enemy_area_body_entered(body: Node2D) -> void:
-	if(body.is_in_group("Enemy")):
-		var parent: Enemy = body.get_parent()
-		
-		if(parent.get_phase() == get_phase()):
-			attackingEnemies.append(body)
-		
+	phase = GamePhaseResource.Phase.DAY		
 		
 func check_attacking_enemies() -> void:
 	for body in attackingEnemies:
-		if body != null:
-			var parent = body.get_parent()
-			
-			if parent is Enemy:
-				var attackPoints: float = parent.attack_maybe()
-				
-				hp -= attackPoints
+		if body != null && body is Enemy:
+			var enemy: Enemy = body as Enemy;
+			var attackPoints: float = enemy.attack_maybe()
+			hp -= attackPoints
 
 func check_enemies_in_attacking_range() -> void:
 	if time_since_last_hit > delay_for_hit && enemiesInAttackRange.size() > 0:
 		time_since_last_hit = 0
 		
 		for body in enemiesInAttackRange:
-			if body != null:
-				var parent = body.get_parent()
+			if body != null && body is Enemy:
+				var enemy: Enemy = body as Enemy;
+				var remaining_hp: float = enemy.take_damage(get_attack_strength())
 				
-				if parent is Enemy:
-					var remaining_hp: float = parent.take_damage(get_attack_strength())
+				if remaining_hp <= 0.0:
+					xp += enemy.get_xp()
 					
-					if remaining_hp <= 0.0:
-						xp += parent.get_xp()
-						
-						enemiesInAttackRange.erase(body)
-						attackingEnemies.erase(body)
-						Gamemanager.remove_enemy(parent, parent.get_enemy_type())
+					enemiesInAttackRange.erase(body)
+					attackingEnemies.erase(body)
+					enemy.die()
 
 func check_if_still_alive() -> void:
 	if hp > 0.0:
 		pass
-	else:		
-		queue_free()
+	else:
+		die()
 
 func _process(delta: float) -> void:
 	super._process(delta)
@@ -92,13 +79,6 @@ func _process(delta: float) -> void:
 		switch_phase_timer = time_to_switch_phase
 		switch_phase()
 
-func _on_player_area_body_entered(body: Node2D) -> void:
-	if(body.is_in_group("Enemy")):
-		var parent: Enemy = body.get_parent()
-		
-		if(parent.get_phase() == get_phase()):
-			enemiesInAttackRange.append(body)
-
 func get_level():
 	return floor(xp / xp_per_level) + 1
 
@@ -116,8 +96,21 @@ func switch_phase():
 			phase = GamePhaseResource.Phase.NIGHT
 
 func _on_enemy_area_body_exited(body: Node2D) -> void:
-	attackingEnemies.erase(body)
-
+	if is_instance_valid(body):
+		attackingEnemies.erase(body)
 
 func _on_player_area_body_exited(body: Node2D) -> void:
-	enemiesInAttackRange.erase(body)
+	if is_instance_valid(body):
+		enemiesInAttackRange.erase(body)
+
+func _on_player_area_body_entered(body: Node2D) -> void:
+	if(body.is_in_group("Enemy")):
+		var enemy: Enemy = body as Enemy;
+		if(enemy.get_phase() == get_phase()):
+			enemiesInAttackRange.append(body)
+
+func _on_enemy_area_body_entered(body) -> void:
+	if(body.is_in_group("Enemy")):
+		var enemy: Enemy = body as Enemy;
+		if(enemy.get_phase() == get_phase()):
+			attackingEnemies.append(enemy)

@@ -1,4 +1,4 @@
-[gd_scene load_steps=4 format=3 uid="uid://dxijnbdo3gbpn"]
+[gd_scene load_steps=5 format=3 uid="uid://dxijnbdo3gbpn"]
 
 [ext_resource type="Script" path="res://scenes/characters/player.gd" id="1_bp4xm"]
 
@@ -6,7 +6,10 @@
 radius = 20.0
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_tswmu"]
-radius = 62.1289
+radius = 70.0
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_oklh1"]
+radius = 25.0
 
 [node name="Player" type="CharacterBody2D" groups=["Player"]]
 motion_mode = 1
@@ -18,7 +21,17 @@ polygon = PackedVector2Array(-12, -16, 20, 0, -12, 16)
 [node name="BodyCollision" type="CollisionShape2D" parent="."]
 shape = SubResource("CircleShape2D_ijmx5")
 
-[node name="AttackArea" type="Area2D" parent="."]
+[node name="PlayerArea" type="Area2D" parent="."]
 
-[node name="AttackShape" type="CollisionShape2D" parent="AttackArea"]
+[node name="AttackShape" type="CollisionShape2D" parent="PlayerArea"]
 shape = SubResource("CircleShape2D_tswmu")
+
+[node name="EnemyArea" type="Area2D" parent="."]
+
+[node name="EnemyAttackShape" type="CollisionShape2D" parent="EnemyArea"]
+shape = SubResource("CircleShape2D_oklh1")
+
+[connection signal="body_entered" from="PlayerArea" to="." method="_on_player_area_body_entered"]
+[connection signal="body_exited" from="PlayerArea" to="." method="_on_player_area_body_exited"]
+[connection signal="body_entered" from="EnemyArea" to="." method="_on_enemy_area_body_entered"]
+[connection signal="body_exited" from="EnemyArea" to="." method="_on_enemy_area_body_exited"]

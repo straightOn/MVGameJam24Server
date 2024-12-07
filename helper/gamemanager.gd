@@ -69,4 +69,7 @@ static func reset_game() -> void:
 	_current_time = _time_base
 
 static func can_add_enemy() -> bool:
-	return enemies.size() < get_max_enemies()
+	return Gamemanager.enemies.size() < get_max_enemies()
+
+static func is_game_active() -> bool:
+	return Gamemanager.connected_players.size() > 0
