@@ -55,6 +55,7 @@ func create_player(id: int):
 	player.take_damage_event.connect(connection_handler.object_takes_damage)
 	player.player_phase_remaining_event.connect(connection_handler.player_phase_remaining)
 	player.player_phase_switch_event.connect(connection_handler.player_phase_switch)
+	player.die_event.connect(_player_died)
 	
 func broadcast_game_objects(game_objects: Dictionary):
 	for key in game_objects:
@@ -76,3 +77,7 @@ func _enemy_died(object: CharacterBase):
 	Gamemanager.enemies.erase(object.id)
 	connection_handler.object_removed(object.id)
 	object.queue_free()
+
+func _player_died(player: Player):
+	connection_handler.game_over(player.id, player.kills, int(player.alive_time))
+	_player_disconnect(player.id)

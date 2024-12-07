@@ -19,7 +19,7 @@ var target
 
 func _init() -> void:
 	type = ObjectTypeResource.ObjectType.Bug
-	speed = 200
+	speed = 180
 	id = Time.get_ticks_usec()
 	hp = hp_base * pow(1.1, Gamemanager.get_wave() - 1)
 	max_hp = hp
@@ -44,7 +44,8 @@ func _process(delta: float) -> void:
 		velocity = knockback
 		knockback = knockback.lerp(Vector2.ZERO, friction)
 	else:
-		var direction = Vector2.ZERO
+		var angle = randf() * 2 * PI
+		var direction = Vector2(cos(angle), sin(angle)).normalized()
 		if target && is_instance_valid(target) && target.get_phase() == get_phase():
 			direction = (target.global_position - global_position).normalized()
 		else:

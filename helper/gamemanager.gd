@@ -26,6 +26,7 @@ func _ready() -> void:
 
 func _process(delta):	
 	if (!Gamemanager.is_game_active()):
+		reset_game()
 		return
 	# time is für wave - man kommt automatisch in die nächste stufe
 	var new_time: int = get_remaining_time(delta)
@@ -74,6 +75,10 @@ static func reset_game() -> void:
 	_current_wave = 1
 	_current_status = "Idle"
 	_current_time = _time_base
+	for enemy in enemies:
+		if is_instance_valid(enemy): 
+			enemy.queue_free()
+	enemies.clear()
 
 static func can_add_enemy() -> bool:
 	return Gamemanager.enemies.size() < get_max_enemies()

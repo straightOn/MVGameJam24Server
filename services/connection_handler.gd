@@ -67,6 +67,9 @@ func player_phase_switch(id: int, new_phase: GamePhaseResource.Phase):
 func player_phase_remaining(id: int, remaining: int):
 	rpc_id(id, "receive_player_phase_remaining", id, remaining)
 
+func game_over(id: int, kills: int, alive_time: int):
+	rpc_id(id, "receive_game_over", id, kills, alive_time)
+
 @rpc("any_peer")
 func join_game():
 	super.join_game()

@@ -22,6 +22,9 @@ var delay_for_hit: float = 1
 var time_to_switch_phase: int = 10
 var switch_phase_timer = 5
 
+var kills = 0
+var alive_time = 0
+
 @onready var hp_label: Label = %Hp
 @onready var phase_label: Label = %Phase
 @onready var phase_timer_label: Label = %PhaseTimer
@@ -51,6 +54,8 @@ func check_attacking_enemies() -> void:
 				hp -= attackPoints
 				take_damage_event.emit(id, attackPoints, hp)
 				hp_label.text = str(hp)
+				if hp < 0:
+					die()
 
 func check_enemies_in_attacking_range() -> void:
 	if time_since_last_hit > delay_for_hit && enemiesInAttackRange.size() > 0:
@@ -63,7 +68,7 @@ func check_enemies_in_attacking_range() -> void:
 				
 				if remaining_hp <= 0.0:
 					xp += enemy.get_xp()
-					
+					kills += 1
 					enemiesInAttackRange.erase(body)
 					attackingEnemies.erase(body)
 					enemy.die()
@@ -77,6 +82,7 @@ func check_if_still_alive() -> void:
 func _process(delta: float) -> void:
 	super._process(delta)
 	time_since_last_hit += delta
+	alive_time += delta
 	
 	check_enemies_in_attacking_range()
 	check_attacking_enemies()
