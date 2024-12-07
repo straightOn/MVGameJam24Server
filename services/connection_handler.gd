@@ -39,10 +39,10 @@ func object_removed(id: int):
 	for connection in active_connections:
 		rpc_id(connection, "receive_object_removed", id)
 	
-func object_position_update(id: int, position: Vector2):
+func object_position_update(id: int, position: Vector2, direction: Vector2):
 	print_debug("Updating Object position.")
 	for connection in active_connections:
-		rpc_id(connection, "receive_object_position_update", id, position)
+		rpc_id(connection, "receive_object_position_update", id, position, direction)
 
 func send_game_state(peer_id: int):
 	rpc_id(peer_id, "receive_game_state", active_connections.size(), ConnectionConstants.MAX_CONNECTIONS)
@@ -51,7 +51,7 @@ func send_game_state(peer_id: int):
 func join_game():
 	super.join_game()
 	var sender_id = multiplayer.get_remote_sender_id()
-	self.join_game_event.emit(sender_id)
+	self.player_join_game_event.emit(sender_id)
 
 @rpc("any_peer")
 func move_action(direction: Vector2):
