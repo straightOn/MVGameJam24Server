@@ -14,7 +14,7 @@ var delay_for_hit: float = 1
 @export var att_base: float = 1
 
 @export var enemy_type: ObjectTypeResource.ObjectType = ObjectTypeResource.ObjectType.Bug
-@export var enemy_phase: GamePhaseResource.GamePhase = GamePhaseResource.GamePhase.NORMAL
+@export var enemy_phase: GamePhaseResource.Phase = GamePhaseResource.Phase.DAY
 
 var target: Player
 

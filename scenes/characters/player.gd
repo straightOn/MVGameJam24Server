@@ -22,7 +22,7 @@ var enemiesInAttackRange: Array = []
 var time_since_last_hit: float = 10
 var delay_for_hit: float = 1
 
-var current_phase: GamePhaseResource.GamePhase = GamePhaseResource.GamePhase.NORMAL
+var current_phase: GamePhaseResource.Phase = GamePhaseResource.Phase.DAY
 
 var time_to_switch_phase: int = 60
 var switch_phase_timer = 60
@@ -112,12 +112,12 @@ func get_max_hp():
 
 func switch_phase():
 	match current_phase:
-		GamePhaseResource.GamePhase.DREAM:
-			current_phase = GamePhaseResource.GamePhase.NORMAL
-		GamePhaseResource.GamePhase.NORMAL:
-			current_phase = GamePhaseResource.GamePhase.DREAM
+		GamePhaseResource.Phase.NIGHT:
+			current_phase = GamePhaseResource.Phase.DAY
+		GamePhaseResource.Phase.DAY:
+			current_phase = GamePhaseResource.Phase.NIGHT
 
-func get_phase() -> GamePhaseResource.GamePhase:
+func get_phase() -> GamePhaseResource.Phase:
 	return current_phase
 
 

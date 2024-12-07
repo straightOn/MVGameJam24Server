@@ -1,0 +1,24 @@
+[gd_scene load_steps=4 format=3 uid="uid://dxijnbdo3gbpn"]
+
+[ext_resource type="Script" path="res://scenes/characters/player.gd" id="1_bp4xm"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_ijmx5"]
+radius = 20.0
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_tswmu"]
+radius = 62.1289
+
+[node name="Player" type="CharacterBody2D"]
+motion_mode = 1
+script = ExtResource("1_bp4xm")
+
+[node name="Presentation" type="Polygon2D" parent="."]
+polygon = PackedVector2Array(-12, -16, 20, 0, -12, 16)
+
+[node name="BodyCollision" type="CollisionShape2D" parent="."]
+shape = SubResource("CircleShape2D_ijmx5")
+
+[node name="AttackArea" type="Area2D" parent="."]
+
+[node name="AttackShape" type="CollisionShape2D" parent="AttackArea"]
+shape = SubResource("CircleShape2D_tswmu")
