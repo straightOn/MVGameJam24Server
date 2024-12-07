@@ -13,8 +13,8 @@ func _ready():
 	spawnpoint.add_enemy_event.connect(_add_enemy)
 	spawnpoint2.add_enemy_event.connect(_add_enemy)
 	# wave-events
-	Gamemanager.wave_timer_updated_event.connect(_wave_timer_updated)
-	Gamemanager.new_wave_started_event.connect(_new_wave_started)
+	Gamemanager.wave_timer_updated_event.connect(connection_handler.update_wave_timer)
+	Gamemanager.new_wave_started_event.connect(connection_handler.new_wave_started)
 	# connection events
 	connection_handler.player_connect_event.connect(_player_connect)
 	connection_handler.player_disconnect_event.connect(_player_disconnect)
@@ -32,7 +32,6 @@ func _player_disconnect(peer_id: int):
 		connection_handler.object_removed(peer_id)
 		remove_child(player)
 		player.queue_free()
-		
 
 func _player_move_event(peer_id: int, input: Vector2):
 	if (Gamemanager.connected_players.has(peer_id)):
@@ -52,8 +51,10 @@ func create_player(id: int):
 	player.position = initial_position
 	add_child(player)
 	player.position_changed_event.connect(connection_handler.object_position_update)
-	player.attack_event.connect(_attack)
-	player.take_damage_event.connect(_take_damage)
+	player.attack_event.connect(connection_handler.object_attacks)
+	player.take_damage_event.connect(connection_handler.object_takes_damage)
+	player.player_phase_remaining_event.connect(connection_handler.player_phase_remaining)
+	player.player_phase_switch_event.connect(connection_handler.player_phase_switch)
 	
 func broadcast_game_objects(game_objects: Dictionary):
 	for key in game_objects:
@@ -65,8 +66,8 @@ func _add_enemy(new_enemy: Enemy, global_position: Vector2):
 	add_child(new_enemy)
 	new_enemy.position_changed_event.connect(connection_handler.object_position_update)
 	new_enemy.die_event.connect(_enemy_died)
-	new_enemy.take_damage_event.connect(_take_damage)
-	new_enemy.attack_event.connect(_attack)
+	new_enemy.take_damage_event.connect(connection_handler.object_takes_damage)
+	new_enemy.attack_event.connect(connection_handler.object_attacks)
 	new_enemy.global_position = global_position
 	connection_handler.object_created(new_enemy.id, new_enemy.type, new_enemy.position)
 
@@ -75,15 +76,3 @@ func _enemy_died(object: CharacterBase):
 	Gamemanager.enemies.erase(object.id)
 	connection_handler.object_removed(object.id)
 	object.queue_free()
-
-func _take_damage(id: int, damage: float, newHp: float):
-	connection_handler.object_takes_damage(id, damage, newHp)
-
-func _attack(id: int, direction: Vector2):
-	connection_handler.object_attacks(id, direction)
-	
-func _wave_timer_updated(remaining: int):
-	connection_handler.update_wave_timer(remaining)
-	
-func _new_wave_started(new_wave: int):
-	connection_handler.new_wave_started(new_wave)

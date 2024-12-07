@@ -22,6 +22,11 @@ var delay_for_hit: float = 1
 var time_to_switch_phase: int = 60
 var switch_phase_timer = 60
 
+signal player_phase_switch_event(id: int, new_phase: GamePhaseResource.Phase)
+signal player_phase_remaining_event(id: int, remaining: int)
+
+var last_remaining: int
+
 func _init():
 	speed = 150
 	max_hp = maxhp_base
@@ -76,6 +81,9 @@ func _process(delta: float) -> void:
 		hp = min(get_max_hp(), hp)
 	
 	switch_phase_timer -= delta
+	if (switch_phase_timer != last_remaining):
+		last_remaining = switch_phase_timer
+		player_phase_remaining_event.emit(id, int(switch_phase_timer))
 	
 	if(switch_phase_timer < 0.0):
 		switch_phase_timer = time_to_switch_phase
@@ -96,7 +104,8 @@ func switch_phase():
 			phase = GamePhaseResource.Phase.DAY
 		GamePhaseResource.Phase.DAY:
 			phase = GamePhaseResource.Phase.NIGHT
-
+	player_phase_switch_event.emit(id, phase)
+	
 func _on_enemy_area_body_exited(body: Node2D) -> void:
 	if is_instance_valid(body):
 		attackingEnemies.erase(body)

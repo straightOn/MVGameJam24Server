@@ -61,6 +61,12 @@ func new_wave_started(new_wave: int):
 func send_game_state(peer_id: int):
 	rpc_id(peer_id, "receive_game_state", active_connections.size(), ConnectionConstants.MAX_CONNECTIONS)
 
+func player_phase_switch(id: int, new_phase: GamePhaseResource.Phase):
+	rpc_id(id, "receive_new_player_phase", id, new_phase)
+	
+func player_phase_remaining(id: int, remaining: int):
+	rpc_id(id, "receive_player_phase_remaining", id, remaining)
+
 @rpc("any_peer")
 func join_game():
 	super.join_game()
