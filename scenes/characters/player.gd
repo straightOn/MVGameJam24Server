@@ -43,7 +43,7 @@ func check_enemies_in_attacking_range() -> void:
 		for body in enemiesInAttackRange:
 			if body != null && body is Enemy:
 				var enemy: Enemy = body as Enemy;
-				var remaining_hp: float = enemy.take_damage(get_attack_strength())
+				var remaining_hp: float = enemy.take_damage(get_attack_strength(), global_position)
 				
 				if remaining_hp <= 0.0:
 					xp += enemy.get_xp()

@@ -11,6 +11,10 @@ var delay_for_hit: float = 1
 @export var att: float = 1
 @export var att_base: float = 1
 
+var knockback_strength: int = 500
+var knockback: Vector2 = Vector2.ZERO
+var friction: float = 0.2
+
 var target: Player
 
 func _init() -> void:
@@ -25,15 +29,17 @@ func _init() -> void:
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta: float) -> void:
-	super._process(delta)
 	time_since_last_hit += delta
-	find_target()
-	
-	if target && is_instance_valid(target):
-		var direction = (target.global_position - global_position).normalized()
-		move_action(direction)
-	#if hp <= 0.0:
-		#queue_free()
+	if knockback.length() > 1:
+		velocity = knockback
+		knockback = knockback.lerp(Vector2.ZERO, friction)
+	else:
+		if target && is_instance_valid(target):
+			var direction = (target.global_position - global_position).normalized()
+			move_action(direction)
+		else:
+			find_target()
+	super._process(delta)
 
 func find_target():
 	var players = get_tree().get_nodes_in_group("Player");
@@ -57,15 +63,13 @@ func attack_maybe(target: Player) -> float:
 	
 	return 0
 
-func take_damage(damage: float) -> float:
+func take_damage(damage: float, attack_position: Vector2) -> float:
 	hp -= damage
+		
+	# Calculate knockback direction
+	var knockback_direction = (global_position - attack_position).normalized()
+	knockback = knockback_direction * knockback_strength
 	
-	var reverse_direction = -(velocity).normalized()
-	var hp_percentage = hp / max_hp
-	var color_value = int(hp_percentage * 255)
-	polygon.color = Color(color_value, color_value, color_value)
-	
-	move_action(reverse_direction * 10)
 	take_damage_event.emit(self)
 	return hp
 	
