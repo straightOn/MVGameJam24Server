@@ -15,17 +15,25 @@ var knockback_strength: int = 500
 var knockback: Vector2 = Vector2.ZERO
 var friction: float = 0.2
 
-var target: Player
+var target
 
 func _init() -> void:
 	type = ObjectTypeResource.ObjectType.Bug
-	phase = GamePhaseResource.Phase.DAY
 	speed = 200
 	id = Time.get_ticks_usec()
 	hp = hp_base * pow(1.1, Gamemanager.get_wave() - 1)
 	max_hp = hp
 	xp = Gamemanager.get_wave()
 	att = att_base * pow(1.1, Gamemanager.get_wave() - 1)
+
+func _ready():
+	if (type == ObjectTypeResource.ObjectType.Bug):
+		phase = GamePhaseResource.Phase.DAY
+		polygon.color = Color(100, 100, 100)
+	else:
+		phase = GamePhaseResource.Phase.NIGHT
+		polygon.color = Color(255, 255, 255)
+	
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta: float) -> void:
@@ -36,11 +44,12 @@ func _process(delta: float) -> void:
 		velocity = knockback
 		knockback = knockback.lerp(Vector2.ZERO, friction)
 	else:
-		if target && is_instance_valid(target):
-			var direction = (target.global_position - global_position).normalized()
-			move_action(direction)
+		var direction = Vector2.ZERO
+		if target && is_instance_valid(target) && target.get_phase() == get_phase():
+			direction = (target.global_position - global_position).normalized()
 		else:
 			find_target()
+		move_action(direction)
 	super._process(delta)
 
 func find_target():
@@ -55,6 +64,8 @@ func find_target():
 				if distance < shortest_distance:
 					shortest_distance = distance
 					target = node
+			else:
+				target = null
 
 func attack_maybe(target: Player) -> float:
 	if(time_since_last_hit > delay_for_hit):

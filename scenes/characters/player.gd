@@ -19,8 +19,12 @@ var enemiesInAttackRange: Array = []
 var time_since_last_hit: float = 10
 var delay_for_hit: float = 1
 
-var time_to_switch_phase: int = 60
-var switch_phase_timer = 60
+var time_to_switch_phase: int = 10
+var switch_phase_timer = 5
+
+@onready var hp_label: Label = %Hp
+@onready var phase_label: Label = %Phase
+@onready var phase_timer_label: Label = %PhaseTimer
 
 signal player_phase_switch_event(id: int, new_phase: GamePhaseResource.Phase)
 signal player_phase_remaining_event(id: int, remaining: int)
@@ -32,7 +36,11 @@ func _init():
 	max_hp = maxhp_base
 	hp = max_hp
 	type = ObjectTypeResource.ObjectType.Player
-	phase = GamePhaseResource.Phase.DAY		
+	phase = GamePhaseResource.Phase.DAY
+
+func _ready():
+	hp_label.text = str(hp)
+	phase_label.text = "DAY"
 		
 func check_attacking_enemies() -> void:
 	for body in attackingEnemies:
@@ -42,6 +50,7 @@ func check_attacking_enemies() -> void:
 			if (attackPoints > 0):
 				hp -= attackPoints
 				take_damage_event.emit(id, attackPoints, hp)
+				hp_label.text = str(hp)
 
 func check_enemies_in_attacking_range() -> void:
 	if time_since_last_hit > delay_for_hit && enemiesInAttackRange.size() > 0:
@@ -84,6 +93,7 @@ func _process(delta: float) -> void:
 	if (switch_phase_timer != last_remaining):
 		last_remaining = switch_phase_timer
 		player_phase_remaining_event.emit(id, int(switch_phase_timer))
+		phase_timer_label.text = str(int(switch_phase_timer))
 	
 	if(switch_phase_timer < 0.0):
 		switch_phase_timer = time_to_switch_phase
@@ -102,9 +112,12 @@ func switch_phase():
 	match phase:
 		GamePhaseResource.Phase.NIGHT:
 			phase = GamePhaseResource.Phase.DAY
+			phase_label.text = "DAY"
 		GamePhaseResource.Phase.DAY:
 			phase = GamePhaseResource.Phase.NIGHT
+			phase_label.text = "NIGHT"
 	player_phase_switch_event.emit(id, phase)
+	
 	
 func _on_enemy_area_body_exited(body: Node2D) -> void:
 	if is_instance_valid(body):

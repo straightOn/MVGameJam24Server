@@ -16,6 +16,11 @@ signal new_wave_started_event(new_wave: int)
 
 var last_time: int
 
+static var bug_counter: int = 0
+static var ghost_counter: int = 0
+
+const ObjectTypeResource = preload("res://shared/object_type.gd")
+
 func _ready() -> void:
 	reset_game()
 
@@ -75,3 +80,11 @@ static func can_add_enemy() -> bool:
 
 static func is_game_active() -> bool:
 	return Gamemanager.connected_players.size() > 0
+
+static func get_next_type() -> ObjectTypeResource.ObjectType:
+	if (bug_counter > ghost_counter):
+		ghost_counter += 1
+		return ObjectTypeResource.ObjectType.Ghost
+	else:
+		bug_counter += 1
+		return ObjectTypeResource.ObjectType.Bug

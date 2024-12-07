@@ -12,6 +12,8 @@ radius = 70.0
 radius = 25.0
 
 [node name="Player" type="CharacterBody2D" groups=["Player"]]
+collision_layer = 2
+collision_mask = 2
 motion_mode = 1
 script = ExtResource("1_bp4xm")
 
@@ -30,6 +32,33 @@ shape = SubResource("CircleShape2D_tswmu")
 
 [node name="EnemyAttackShape" type="CollisionShape2D" parent="EnemyArea"]
 shape = SubResource("CircleShape2D_oklh1")
+
+[node name="Hp" type="Label" parent="."]
+unique_name_in_owner = true
+offset_left = -72.0
+offset_top = -56.0
+offset_right = 74.0
+offset_bottom = -33.0
+text = "hp"
+horizontal_alignment = 1
+
+[node name="Phase" type="Label" parent="."]
+unique_name_in_owner = true
+offset_left = -72.0
+offset_top = -80.0
+offset_right = 74.0
+offset_bottom = -57.0
+text = "phase"
+horizontal_alignment = 1
+
+[node name="PhaseTimer" type="Label" parent="."]
+unique_name_in_owner = true
+offset_left = -73.0
+offset_top = -105.0
+offset_right = 73.0
+offset_bottom = -82.0
+text = "phase timer"
+horizontal_alignment = 1
 
 [connection signal="body_entered" from="PlayerArea" to="." method="_on_player_area_body_entered"]
 [connection signal="body_exited" from="PlayerArea" to="." method="_on_player_area_body_exited"]
