@@ -17,7 +17,7 @@ var attackingEnemies: Array[Enemy] = []
 var enemiesInAttackRange: Array = []
 
 var time_since_last_hit: float = 10
-var delay_for_hit: float = 1
+var delay_for_hit: float = .3
 
 var time_to_switch_phase: int = 10
 var switch_phase_timer = 5
@@ -42,8 +42,11 @@ func _init():
 	phase = GamePhaseResource.Phase.DAY
 
 func _ready():
-	hp_label.text = str(hp)
+	updateLabels()
 	phase_label.text = "DAY"
+	
+func updateLabels():	
+	hp_label.text = str(hp)
 		
 func check_attacking_enemies() -> void:
 	for body in attackingEnemies:
@@ -53,7 +56,7 @@ func check_attacking_enemies() -> void:
 			if (attackPoints > 0):
 				hp -= attackPoints
 				take_damage_event.emit(id, attackPoints, hp)
-				hp_label.text = str(hp)
+				updateLabels()
 				if hp < 0:
 					die()
 
@@ -84,6 +87,8 @@ func _process(delta: float) -> void:
 	time_since_last_hit += delta
 	alive_time += delta
 	
+	updateLabels()
+	
 	check_enemies_in_attacking_range()
 	check_attacking_enemies()
 	check_if_still_alive()
@@ -94,6 +99,8 @@ func _process(delta: float) -> void:
 		hp_last_regen = 0
 		hp += HP_REGENERATION
 		hp = min(get_max_hp(), hp)
+		
+		take_damage_event.emit(id, 0, hp)
 	
 	switch_phase_timer -= delta
 	if (switch_phase_timer != last_remaining):

@@ -16,6 +16,9 @@ collision_layer = 2
 collision_mask = 2
 motion_mode = 1
 script = ExtResource("1_bp4xm")
+label = null
+type = null
+phase = null
 
 [node name="Presentation" type="Polygon2D" parent="."]
 polygon = PackedVector2Array(-12, -16, 20, 0, -12, 16)

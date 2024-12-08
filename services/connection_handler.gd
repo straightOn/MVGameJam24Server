@@ -43,6 +43,7 @@ func object_position_update(id: int, position: Vector2, direction: Vector2):
 		rpc_id(connection, "receive_object_position_update", id, position, direction)
 		
 func object_takes_damage(id: int, damage: float, newHp: float):
+	print_debug("object_takes_damage: ", newHp)
 	for connection in active_connections:
 		rpc_id(connection, "receive_object_takes_damage", id, damage, newHp)
 

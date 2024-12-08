@@ -29,10 +29,10 @@ func _init() -> void:
 func _ready():
 	if (type == ObjectTypeResource.ObjectType.Bug):
 		phase = GamePhaseResource.Phase.DAY
-		polygon.color = Color(100, 100, 100)
+		polygon.color = Color(1, 1, 1)
 	else:
 		phase = GamePhaseResource.Phase.NIGHT
-		polygon.color = Color(255, 255, 255)
+		polygon.color = Color(100 / 255, 100 / 255, 100 / 255)
 	
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
