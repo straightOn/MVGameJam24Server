@@ -11,11 +11,30 @@ var active_connections: Array[int] = []
 
 func create_server():
 	var peer = WebSocketMultiplayerPeer.new()
-	peer.create_server(ConnectionConstants.PORT)
+	peer.create_server(ConnectionConstants.PORT, "*", get_tls_options())
 	multiplayer.multiplayer_peer = peer
 	multiplayer.peer_connected.connect(self._on_peer_connected)
 	multiplayer.peer_disconnected.connect(self._on_peer_disconnected)
 	print_debug("server started on port ", ConnectionConstants.PORT)
+
+func get_tls_options():
+	var cert_path = "res://certs/cert.crt"
+	var key_path = "res://certs/privkey.key"
+
+	var tls_cert = X509Certificate.new()
+	var tls_key = CryptoKey.new()
+
+	# Load the certificate
+	if tls_cert.load(cert_path) != OK:
+		print("Failed to load certificate from: ", cert_path)
+		return
+
+	# Load the private key
+	if tls_key.load(key_path) != OK:
+		print("Failed to load private key from: ", key_path)
+		return
+
+	return TLSOptions.server(tls_key, tls_cert)
 
 func _on_peer_connected(peer_id):
 	print_debug("connected: ", peer_id)

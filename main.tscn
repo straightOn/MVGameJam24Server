@@ -7,6 +7,8 @@
 
 [node name="Main" type="Node2D"]
 script = ExtResource("1_cjxr1")
+metadata/_edit_vertical_guides_ = [1537.0]
+metadata/_edit_horizontal_guides_ = [900.0]
 
 [node name="ConnectionHandler" type="Node" parent="."]
 unique_name_in_owner = true
