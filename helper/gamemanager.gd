@@ -8,9 +8,6 @@ static var _current_time: float = _time_base;
 static var _additional_time_per_wave: float = 5
 static var _max_waves: int = 20
 
-static var connected_players: Dictionary = {}
-static var enemies: Dictionary = {}
-
 signal wave_timer_updated_event(remaining: int)
 signal new_wave_started_event(new_wave: int)
 
@@ -19,15 +16,15 @@ var last_time: int
 static var bug_counter: int = 0
 static var ghost_counter: int = 0
 
+static var enemy_count: int = 0
+static var player_count: int = 0
+
 const ObjectTypeResource = preload("res://shared/object_type.gd")
 
 func _ready() -> void:
-	reset_game()
+	reset_game_state()
 
-func _process(delta):	
-	if (!Gamemanager.is_game_active()):
-		reset_game()
-		return
+func _process(delta):
 	# time is für wave - man kommt automatisch in die nächste stufe
 	var new_time: int = get_remaining_time(delta)
 	if (new_time != last_time):
@@ -71,20 +68,20 @@ static func get_max_enemies() -> int:
 	return 10 * pow(1.08, _current_wave)
 
 # Optional: Reset method to reset game data
-static func reset_game() -> void:
+static func reset_game_state() -> void:
 	_current_wave = 1
 	_current_status = "Idle"
 	_current_time = _time_base
-	for enemy in enemies:
-		if is_instance_valid(enemy): 
-			enemy.queue_free()
-	enemies.clear()
+	player_count = 0
+	enemy_count = 0
+	bug_counter = 0
+	ghost_counter = 0
 
 static func can_add_enemy() -> bool:
-	return Gamemanager.enemies.size() < get_max_enemies()
+	return enemy_count < get_max_enemies()
 
 static func is_game_active() -> bool:
-	return Gamemanager.connected_players.size() > 0
+	return player_count > 0
 
 static func get_next_type() -> ObjectTypeResource.ObjectType:
 	if (bug_counter > ghost_counter):

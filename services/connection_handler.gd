@@ -59,7 +59,7 @@ func new_wave_started(new_wave: int):
 		rpc_id(connection, "receive_next_wave", new_wave)
 
 func send_game_state(peer_id: int):
-	rpc_id(peer_id, "receive_game_state", active_connections.size(), ConnectionConstants.MAX_CONNECTIONS)
+	rpc_id(peer_id, "receive_game_state", peer_id: int, active_connections.size(), ConnectionConstants.MAX_CONNECTIONS)
 
 func player_phase_switch(id: int, new_phase: GamePhaseResource.Phase):
 	rpc_id(id, "receive_new_player_phase", id, new_phase)
