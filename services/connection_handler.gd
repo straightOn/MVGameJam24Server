@@ -27,10 +27,10 @@ func _on_peer_disconnected(peer_id):
 	active_connections.erase(peer_id)
 	player_disconnect_event.emit(peer_id)
 	
-func object_created(id: int, type: ObjectTypeResource.ObjectType, initial_position: Vector2, label: String):
+func object_created(id: int, type: ObjectTypeResource.ObjectType, initial_position: Vector2, hp: float, max_hp: float, label: String):
 	print_debug("Object created.")
 	for connection in active_connections:
-		rpc_id(connection, "receive_object_created", id, type, initial_position, label)
+		rpc_id(connection, "receive_object_created", id, type, initial_position, hp, max_hp, label)
 
 func object_removed(id: int):
 	print_debug("Object removed.")

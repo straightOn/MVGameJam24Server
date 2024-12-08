@@ -60,8 +60,8 @@ func create_player(id: int, player_name: String):
 	
 func broadcast_game_objects(game_objects: Dictionary):
 	for key in game_objects:
-		var current_game_object: GameObject = game_objects[key] as GameObject
-		connection_handler.object_created(key, current_game_object.type, current_game_object.position, current_game_object.label)
+		var current_game_object: CharacterBase = game_objects[key] as CharacterBase
+		connection_handler.object_created(key, current_game_object.type, current_game_object.position, current_game_object.hp, current_game_object.max_hp,  current_game_object.label)
 
 func _add_enemy(new_enemy: Enemy, global_position: Vector2):
 	Gamemanager.enemies[new_enemy.id] = new_enemy
@@ -71,7 +71,7 @@ func _add_enemy(new_enemy: Enemy, global_position: Vector2):
 	new_enemy.take_damage_event.connect(connection_handler.object_takes_damage)
 	new_enemy.attack_event.connect(connection_handler.object_attacks)
 	new_enemy.global_position = global_position
-	connection_handler.object_created(new_enemy.id, new_enemy.type, new_enemy.position, "none")
+	connection_handler.object_created(new_enemy.id, new_enemy.type, new_enemy.position, new_enemy.hp, new_enemy.max_hp, "none")
 
 func _enemy_died(object: CharacterBase):
 	remove_child(Gamemanager.enemies.get(object.id))
