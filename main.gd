@@ -47,9 +47,13 @@ func _player_join_game(peer_id: int, name: String):
 		create_player(peer_id, name)
 		broadcast_game_objects(connected_players)
 		broadcast_game_objects(enemies)
+		
+func get_new_player_location() -> Vector2:
+	# maybe check if there is a player near an generate other location
+	return Vector2(randi_range(50, 1000),randi_range(50, 500))
 
 func create_player(id: int, player_name: String):
-	var initial_position: Vector2 = Vector2(50,50)
+	var initial_position: Vector2 = get_new_player_location()
 	var player: Player = player_resorce.instantiate() as Player
 	connected_players[id] = player
 	player.id = id
