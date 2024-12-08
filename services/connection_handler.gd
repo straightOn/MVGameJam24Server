@@ -10,8 +10,8 @@ signal player_join_game_event(peer_id: int, name: String)
 var active_connections: Array[int] = []
 
 func create_server():
-	var peer = ENetMultiplayerPeer.new()
-	peer.create_server(ConnectionConstants.PORT, ConnectionConstants.MAX_CONNECTIONS)
+	var peer = WebSocketMultiplayerPeer.new()
+	peer.create_server(ConnectionConstants.PORT)
 	multiplayer.multiplayer_peer = peer
 	multiplayer.peer_connected.connect(self._on_peer_connected)
 	multiplayer.peer_disconnected.connect(self._on_peer_disconnected)
