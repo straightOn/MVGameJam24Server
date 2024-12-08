@@ -42,6 +42,8 @@ func _player_move_event(peer_id: int, input: Vector2):
 
 func _player_join_game(peer_id: int, name: String):
 	if (!connected_players.has(peer_id)):
+		connection_handler.new_wave_started(Gamemanager._current_wave)
+		connection_handler.update_wave_timer(Gamemanager._current_time)
 		create_player(peer_id, name)
 		broadcast_game_objects(connected_players)
 		broadcast_game_objects(enemies)
