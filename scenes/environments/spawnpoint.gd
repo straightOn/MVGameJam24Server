@@ -14,8 +14,6 @@ var time_elapsed: float = 0.0
 const MAX_TIME_ELAPSED: float = 0.3
 
 func _process(delta: float) -> void:
-	if (!Gamemanager.is_game_active()):
-		return
 	if (!Gamemanager.can_add_enemy()):
 		return
 	time_elapsed += delta;

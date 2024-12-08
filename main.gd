@@ -6,6 +6,8 @@ extends Node2D
 @onready var spawnpoint: SpawnPoint = %SpawnPoint
 @onready var spawnpoint2: SpawnPoint = %SpawnPoint2
 
+@onready var game_status_label: Label = %StatusLabel
+
 const ObjectTypeResource = preload("res://shared/object_type.gd")
 
 static var connected_players: Dictionary = {}
@@ -86,23 +88,12 @@ func _player_died(player: Player):
 
 func remove_object(object):
 	connection_handler.object_removed(object.id)
-	remove_child(object)
+	object.queue_free()
 	if object is Player:
 		Gamemanager.player_count -= 1
-		if !Gamemanager.is_game_active():
-			reset_enemies()
-			Gamemanager.reset_game_state()
 	if object is Enemy:
 		Gamemanager.enemy_count -= 1
-	object.queue_free()
-
-func reset_enemies():
-	for key in enemies:
-		var enemy = enemies[key]
-		remove_child(enemy)
-		enemies.erase(key)
-		enemy.queue_free()
-		
+	check_state()
 
 func add_object(object: CharacterBase):
 	connection_handler.object_created(object.id, object.type, object.position, object.hp, object.max_hp, object.label)
@@ -111,3 +102,19 @@ func add_object(object: CharacterBase):
 		Gamemanager.player_count += 1
 	if object is Enemy:
 		Gamemanager.enemy_count += 1
+	check_state()
+
+func check_state():
+	if Gamemanager.player_count > 0:
+		Gamemanager.set_active()
+	else:
+		# clear all enemies
+		for node in get_children():
+			if node is Enemy:
+				node.queue_free()
+		enemies.clear()
+		Gamemanager.reset_game_state()
+	if Gamemanager.is_game_active():
+		game_status_label.text = "ACTIVE"
+	else:
+		game_status_label.text = "PAUSED"

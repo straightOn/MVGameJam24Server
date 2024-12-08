@@ -20,8 +20,3 @@ script = ExtResource("3_mpv1r")
 unique_name_in_owner = true
 position = Vector2(851, 140)
 script = ExtResource("3_mpv1r")
-
-[node name="StatusLabel" type="Label" parent="."]
-unique_name_in_owner = true
-offset_right = 40.0
-offset_bottom = 23.0

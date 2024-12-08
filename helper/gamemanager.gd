@@ -1,7 +1,9 @@
 extends Node
 
+const ObjectTypeResource = preload("res://shared/object_type.gd")
+
 static var _current_wave: int = 0
-static var _current_status: String = "Idle" # Possible statuses: "Idle", "Ingame", "Dead"
+static var _current_status: ObjectTypeResource.GameState = ObjectTypeResource.GameState.Paused
 
 static var _time_base: float = 5;
 static var _current_time: float = _time_base;
@@ -19,17 +21,20 @@ static var ghost_counter: int = 0
 static var enemy_count: int = 0
 static var player_count: int = 0
 
-const ObjectTypeResource = preload("res://shared/object_type.gd")
 
 func _ready() -> void:
 	reset_game_state()
 
 func _process(delta):
-	# time is für wave - man kommt automatisch in die nächste stufe
+	if (_current_status == ObjectTypeResource.GameState.Paused):
+		return
 	var new_time: int = get_remaining_time(delta)
 	if (new_time != last_time):
 		last_time = new_time
 		wave_timer_updated_event.emit(new_time)
+
+func set_active():
+	_current_status = ObjectTypeResource.GameState.Active
 
 func next_wave() -> void:
 	_current_wave += 1
@@ -51,18 +56,9 @@ static func game_won() -> bool:
 static func get_wave() -> int:
 	return _current_wave
 
-static func get_status() -> String:
-	return _current_status
-
 # Public setter methods
 static func set_wave(wave: int) -> void:
 	_current_wave = wave
-
-static func set_status_ingame() -> void:
-	_current_status = "Ingame"
-
-static func set_status_dead() -> void:
-	_current_status = "Dead"
 	
 static func get_max_enemies() -> int:
 	return 10 * pow(1.08, _current_wave)
@@ -70,7 +66,7 @@ static func get_max_enemies() -> int:
 # Optional: Reset method to reset game data
 static func reset_game_state() -> void:
 	_current_wave = 1
-	_current_status = "Idle"
+	_current_status = ObjectTypeResource.GameState.Paused
 	_current_time = _time_base
 	player_count = 0
 	enemy_count = 0
@@ -78,10 +74,10 @@ static func reset_game_state() -> void:
 	ghost_counter = 0
 
 static func can_add_enemy() -> bool:
-	return enemy_count < get_max_enemies()
-
+	return  is_game_active() && enemy_count < get_max_enemies()
+	
 static func is_game_active() -> bool:
-	return player_count > 0
+	return _current_status != ObjectTypeResource.GameState.Paused
 
 static func get_next_type() -> ObjectTypeResource.ObjectType:
 	if (bug_counter > ghost_counter):
