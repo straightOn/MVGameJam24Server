@@ -57,6 +57,8 @@ func find_target():
 	var players = get_tree().get_nodes_in_group("Player");
 	var shortest_distance = INF
 	
+	target = null
+	
 	for node in players:
 		if node is Player:
 			if node.get_phase() == get_phase():
@@ -65,8 +67,6 @@ func find_target():
 				if distance < shortest_distance:
 					shortest_distance = distance
 					target = node
-			else:
-				target = null
 
 func attack_maybe(target: Player) -> float:
 	if(time_since_last_hit > delay_for_hit):
