@@ -26,12 +26,12 @@ func get_tls_options():
 
 	# Load the certificate
 	if tls_cert.load(cert_path) != OK:
-		print("Failed to load certificate from: ", cert_path)
+		push_error("Failed to load certificate from: ", cert_path)
 		return
 
 	# Load the private key
 	if tls_key.load(key_path) != OK:
-		print("Failed to load private key from: ", key_path)
+		push_error("Failed to load private key from: ", key_path)
 		return
 
 	return TLSOptions.server(tls_key, tls_cert)
@@ -47,22 +47,18 @@ func _on_peer_disconnected(peer_id):
 	player_disconnect_event.emit(peer_id)
 	
 func object_created(id: int, type: ObjectTypeResource.ObjectType, initial_position: Vector2, hp: float, max_hp: float, label: String):
-	print_debug("Object created.")
 	for connection in active_connections:
 		rpc_id(connection, "receive_object_created", id, type, initial_position, hp, max_hp, label)
 
 func object_removed(id: int):
-	print_debug("Object removed.")
 	for connection in active_connections:
 		rpc_id(connection, "receive_object_removed", id)
 	
 func object_position_update(id: int, position: Vector2, direction: Vector2):
-	print_debug("Updating Object position.")
 	for connection in active_connections:
 		rpc_id(connection, "receive_object_position_update", id, position, direction)
 		
 func object_takes_damage(id: int, damage: float, newHp: float):
-	print_debug("object_takes_damage: ", newHp)
 	for connection in active_connections:
 		rpc_id(connection, "receive_object_takes_damage", id, damage, newHp)
 
