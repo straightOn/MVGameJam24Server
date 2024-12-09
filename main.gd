@@ -31,6 +31,7 @@ var new_player_positions: Array[Vector2] = [
 ]
 
 var current_position_index = 0
+var player_connection_sum = 0
 
 func _ready():
 	# spawn-events
@@ -48,6 +49,8 @@ func _ready():
 	
 func _player_connect(peer_id: int):
 	connection_handler.send_game_state(peer_id)
+	player_connection_sum += 1
+	print_debug("player_connection_sum: ", player_connection_sum)
 
 func _player_disconnect(peer_id: int):
 	if (connected_players.has(peer_id)):
