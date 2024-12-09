@@ -70,7 +70,7 @@ func _player_join_game(peer_id: int, name: String):
 func get_new_player_location() -> Vector2:
 	var new_position = new_player_positions[current_position_index]
 	current_position_index += 1
-	if current_position_index > new_player_positions.size():
+	if current_position_index >= new_player_positions.size():
 		current_position_index = 0
 	# maybe check if there is a player near an generate other location
 	return new_position
