@@ -153,3 +153,4 @@ func check_state():
 		game_status_label.text = "ACTIVE"
 	else:
 		game_status_label.text = "PAUSED"
+		current_position_index = 0
