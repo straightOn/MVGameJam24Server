@@ -1,4 +1,4 @@
-extends Node
+class_name GameManage extends Node
 
 const ObjectTypeResource = preload("res://shared/object_type.gd")
 

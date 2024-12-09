@@ -10,8 +10,27 @@ extends Node2D
 
 const ObjectTypeResource = preload("res://shared/object_type.gd")
 
-static var connected_players: Dictionary = {}
-static var enemies: Dictionary = {}
+var connected_players: Dictionary = {}
+var enemies: Dictionary = {}
+var new_player_positions: Array[Vector2] = [
+	Vector2(100,100),
+	Vector2(200,100),
+	Vector2(300,100),
+	Vector2(400,100),
+	Vector2(500,100),
+	Vector2(600,100),
+	Vector2(700,100),
+	Vector2(800,100),
+	Vector2(900,100),
+	Vector2(1000,100),
+	Vector2(1100,100),
+	Vector2(1200,100),
+	Vector2(1300,100),
+	Vector2(1400,100),
+	Vector2(1500,100)
+]
+
+var current_position_index = 0
 
 func _ready():
 	# spawn-events
@@ -33,7 +52,6 @@ func _player_connect(peer_id: int):
 func _player_disconnect(peer_id: int):
 	if (connected_players.has(peer_id)):
 		var player: Player = connected_players.get(peer_id)
-		connected_players.erase(peer_id)
 		remove_object(player)
 
 func _player_move_event(peer_id: int, input: Vector2):
@@ -44,18 +62,22 @@ func _player_join_game(peer_id: int, name: String):
 	if (!connected_players.has(peer_id)):
 		connection_handler.new_wave_started(Gamemanager._current_wave)
 		connection_handler.update_wave_timer(Gamemanager._current_time)
-		create_player(peer_id, name)
+		var player: Player = create_player(peer_id, name)		
+		connection_handler.update_player_level(player.id, player.level, player.hp, player.max_hp)
 		broadcast_game_objects(connected_players)
 		broadcast_game_objects(enemies)
 		
 func get_new_player_location() -> Vector2:
+	var new_position = new_player_positions[current_position_index]
+	current_position_index += 1
+	if current_position_index > new_player_positions.size():
+		current_position_index = 0
 	# maybe check if there is a player near an generate other location
-	return Vector2(randi_range(50, 1000),randi_range(50, 500))
+	return new_position
 
-func create_player(id: int, player_name: String):
+func create_player(id: int, player_name: String) -> Player:
 	var initial_position: Vector2 = get_new_player_location()
 	var player: Player = player_resorce.instantiate() as Player
-	connected_players[id] = player
 	player.id = id
 	player.label = player_name
 	player.position = initial_position
@@ -66,8 +88,10 @@ func create_player(id: int, player_name: String):
 	player.player_phase_remaining_event.connect(connection_handler.player_phase_remaining)
 	player.player_phase_switch_event.connect(connection_handler.player_phase_switch)
 	player.die_event.connect(_player_died)
+	player.player_lvl_up_event.connect(connection_handler.update_player_level)
 	# add object
 	add_object(player)
+	return player
 	
 func broadcast_game_objects(game_objects: Dictionary):
 	for key in game_objects:
@@ -75,7 +99,6 @@ func broadcast_game_objects(game_objects: Dictionary):
 		connection_handler.object_created(key, current_game_object.type, current_game_object.position, current_game_object.hp, current_game_object.max_hp,  current_game_object.label)
 
 func _add_enemy(new_enemy: Enemy, global_position: Vector2):
-	enemies[new_enemy.id] = new_enemy
 	new_enemy.position_changed_event.connect(connection_handler.object_position_update)
 	new_enemy.die_event.connect(_enemy_died)
 	new_enemy.take_damage_event.connect(connection_handler.object_takes_damage)
@@ -85,30 +108,36 @@ func _add_enemy(new_enemy: Enemy, global_position: Vector2):
 
 func _enemy_died(object: CharacterBase):
 	remove_object(object)
-	enemies.erase(object.id)
 
 func _player_died(player: Player):
 	connection_handler.game_over(player.id, player.kills, int(player.alive_time))
 	remove_object(player)
-	connected_players.erase(player.id)
 
 func remove_object(object):
+	if object is Player and connected_players.has(object.id):
+		connected_players.erase(object.id)
+		Gamemanager.player_count = connected_players.size()
+		check_state()
+	elif object is Enemy and enemies.has(object.id):
+		enemies.erase(object.id)
+		Gamemanager.enemy_count = enemies.size()
+	else:
+		return
 	connection_handler.object_removed(object.id)
 	object.queue_free()
-	if object is Player:
-		Gamemanager.player_count -= 1
-	if object is Enemy:
-		Gamemanager.enemy_count -= 1
-	check_state()
 
 func add_object(object: CharacterBase):
+	if object is Player and !connected_players.has(object.id):
+		connected_players[object.id] = object
+		Gamemanager.player_count = connected_players.size()
+		check_state()
+	elif object is Enemy and !enemies.has(object.id):
+		enemies[object.id] = object
+		Gamemanager.enemy_count = enemies.size()
+	else:
+		return
 	connection_handler.object_created(object.id, object.type, object.position, object.hp, object.max_hp, object.label)
 	add_child(object)
-	if object is Player:
-		Gamemanager.player_count += 1
-	if object is Enemy:
-		Gamemanager.enemy_count += 1
-	check_state()
 
 func check_state():
 	if Gamemanager.player_count > 0:

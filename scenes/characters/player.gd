@@ -4,6 +4,7 @@ const HP_REGENERATION: float = 0.1
 
 var xp: int = 0
 var xp_per_level: int = 100
+var level = 1
 
 var att_base: int = 5
 var att_increase_per_level: int = 2
@@ -31,6 +32,7 @@ var alive_time = 0
 
 signal player_phase_switch_event(id: int, new_phase: GamePhaseResource.Phase)
 signal player_phase_remaining_event(id: int, remaining: int)
+signal player_lvl_up_event(id: int, new_level: int, new_hp: float, new_max_hp: float)
 
 var last_remaining: int
 
@@ -70,11 +72,21 @@ func check_enemies_in_attacking_range() -> void:
 				var remaining_hp: float = enemy.take_damage(get_attack_strength(), global_position)
 				
 				if remaining_hp <= 0.0:
-					xp += enemy.get_xp()
+					add_xp(enemy.get_xp())
 					kills += 1
 					enemiesInAttackRange.erase(body)
 					attackingEnemies.erase(body)
 					enemy.die()
+
+func add_xp(creep_xp: int):
+	xp += creep_xp
+	if xp > xp_per_level:
+		level += 1
+		xp = 0
+		max_hp = get_max_hp()
+		hp = max_hp
+		player_lvl_up_event.emit(id, level, hp, max_hp)
+		
 
 func check_if_still_alive() -> void:
 	if hp > 0.0:
@@ -93,14 +105,15 @@ func _process(delta: float) -> void:
 	check_attacking_enemies()
 	check_if_still_alive()
 	
-	hp_last_regen += delta
-	
-	if hp_last_regen >= 1.0:
-		hp_last_regen = 0
-		hp += HP_REGENERATION
-		hp = min(get_max_hp(), hp)
-		
-		take_damage_event.emit(id, 0, hp)
+	#will lead to strange behavior with this event - removed temp
+	#hp_last_regen += delta
+	#
+	#if hp_last_regen >= 1.0:
+		#hp_last_regen = 0
+		#hp += HP_REGENERATION
+		#hp = min(get_max_hp(), hp)
+		#
+		#take_damage_event.emit(id, 0, hp)
 	
 	switch_phase_timer -= delta
 	if (switch_phase_timer != last_remaining):
@@ -112,14 +125,11 @@ func _process(delta: float) -> void:
 		switch_phase_timer = time_to_switch_phase
 		switch_phase()
 
-func get_level():
-	return floor(xp / xp_per_level) + 1
-
 func get_attack_strength():
-	return att_base + ((get_level() - 1) * att_increase_per_level)
+	return att_base + (level * att_increase_per_level)
 
 func get_max_hp():
-	return maxhp_base + ((get_level() - 1) * maxhp_increase_per_level)
+	return maxhp_base + (level * maxhp_increase_per_level)
 
 func switch_phase():
 	match phase:

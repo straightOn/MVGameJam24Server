@@ -83,6 +83,9 @@ func send_game_state(peer_id: int):
 
 func player_phase_switch(id: int, new_phase: GamePhaseResource.Phase):
 	rpc_id(id, "receive_new_player_phase", id, new_phase)
+
+func update_player_level(id: int, new_level: int, new_hp: float, new_max_hp: float):
+	rpc_id(id, "receive_level_up", id, new_level, new_hp, new_max_hp)
 	
 func player_phase_remaining(id: int, remaining: int):
 	rpc_id(id, "receive_player_phase_remaining", id, remaining)
